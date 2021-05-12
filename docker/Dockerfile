@@ -13,14 +13,12 @@ RUN apt-get update && \
     libssl-dev protobuf-compiler lld-7 && \
     rm -rf /var/lib/apt/lists/*
 
-COPY . /root/git/ledger-iota-app/
-
 # temporary until base image was updated
 WORKDIR /opt/bolos
 RUN curl -L https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2 --output gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
 RUN tar -xf gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2
 
-WORKDIR /root/git/ledger-iota-app
+COPY . /root/git/ledger-iota-app/
 
 # build blue loader
 WORKDIR /root/git/ledger-iota-app/dev/blue-loader-python

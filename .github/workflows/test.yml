@@ -1,0 +1,40 @@
+name: Build and run tests
+on:
+  push:
+    branches:
+      - develop
+      - feature/ci-test
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build_docker:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      
+      - name: Login to GitHub Docker Registry
+        uses: docker/login-action@v1 
+        with:
+          registry: docker.pkg.github.com
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull Docker image
+        run: docker pull docker.pkg.github.com/${{ github.repository }}/build-app:latest
+
+      - name: Build Docker image with changes
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          file: docker/Dockerfile
+          tags: docker.pkg.github.com/${{ github.repository }}/build-app:pr-${{ github.event.pull_request.number }}
+        #if: github.event_name == 'pull_request'
