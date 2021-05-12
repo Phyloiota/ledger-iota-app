@@ -9,11 +9,11 @@ on:
       - develop
 
 jobs:
-  build_docker:
-    name: Build Docker image
+  build_and_test:
+    name: Build and run tests
     runs-on: ubuntu-latest
     permissions:
-      packages: write
+      packages: read
       contents: read
     steps:
       - name: Check out repo
@@ -34,7 +34,8 @@ jobs:
       - name: Build Docker image with changes
         uses: docker/build-push-action@v2
         with:
-          push: true
           file: docker/Dockerfile
-          tags: docker.pkg.github.com/${{ github.repository }}/build-app:pr-${{ github.event.pull_request.number }}
-        #if: github.event_name == 'pull_request'
+          tags: build-app
+
+      - name: Run simulator
+        run: ./docker/run_simulator.sh
